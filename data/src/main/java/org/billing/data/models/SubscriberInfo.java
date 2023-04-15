@@ -25,4 +25,6 @@ public class SubscriberInfo {
     @JoinColumn(name = "client")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Client client;
+
+    private Float money;
 }
