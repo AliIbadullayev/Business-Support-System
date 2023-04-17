@@ -1,5 +1,6 @@
 package org.billing.data.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -18,13 +19,9 @@ public class SubscriberInfo {
     @Pattern(regexp = "^7[0-9]{10}\\b", message = "The number format is incorrect!\nIt must be so: 79999999999")
     private String number;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "tariff")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Tariff tariff;
-
-    @JoinColumn(name = "client")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Client client;
 
     private Float money;
 }

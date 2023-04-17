@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class Tariff {
     @Id
-    private Long id;
+    private String id;
 
     private String name;
 
@@ -31,10 +31,10 @@ public class Tariff {
     private Float fixedMinutePrice;
 
     /* Плата по определенному тарифу после истечения фиксированного срока */
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Tariff nextTariffAfterFixedMinutes;
 
     /* Тариф для пользователей других операторов */
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Tariff otherOperatorTariff;
 }

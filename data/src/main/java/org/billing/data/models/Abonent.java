@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "managers")
+@Table(name = "abonents")
 @Data
-public class Manager {
+public class Abonent {
+
     @Id
     @Column(name = "username")
     private String username;
