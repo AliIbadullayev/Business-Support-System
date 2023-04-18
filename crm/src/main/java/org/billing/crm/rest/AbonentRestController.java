@@ -31,7 +31,6 @@ public class AbonentRestController {
     public ResponseEntity<?> payForNumber(@RequestBody AbonentPayDto abonentPayDto,
                                          HttpServletRequest request) {
         String username = jwtTokenProvider.getUsernameFromToken(jwtTokenProvider.resolveToken(request));
-        System.out.println(username);
         SubscriberInfo subscriberInfo = abonentService.replenishAbonentBalance(abonentPayDto);
 
         return new ResponseEntity<>(subscriberInfo, HttpStatus.OK);

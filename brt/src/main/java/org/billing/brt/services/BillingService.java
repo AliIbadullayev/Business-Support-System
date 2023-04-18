@@ -1,10 +1,10 @@
 package org.billing.brt.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.billing.brt.dto.PhoneBalanceDto;
 import org.billing.brt.exceptions.NotFoundReportException;
 import org.billing.brt.exceptions.NotFoundSubscriberException;
 import org.billing.brt.utils.BillingUtils;
+import org.billing.data.dto.PhoneBalanceDto;
 import org.billing.data.models.Report;
 import org.billing.data.models.SubscriberInfo;
 import org.billing.data.repositories.SubscriberInfoRepository;

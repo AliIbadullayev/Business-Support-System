@@ -62,7 +62,6 @@ public class AbonentService {
 
     public SubscriberInfo changeTariff(ChangeTariffDto changeTariffDto){
         SubscriberInfo subscriberInfo = subscriberInfoRepository.findByNumber(changeTariffDto.getPhoneNumber());
-        System.out.println(changeTariffDto.getPhoneNumber());
         if (subscriberInfo == null)
             throw new BadChangeTariffException("Номера не действителен! Внесите номер в БД!");
         if (changeTariffDto.getTariffId() == null || changeTariffDto.getPhoneNumber() == null)
