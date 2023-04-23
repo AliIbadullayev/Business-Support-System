@@ -41,7 +41,7 @@ public class HrsService {
             int totalTime = 0;
             float totalCost = 0;
             for (Payload payload : report.getPayloads()) {
-                Payload tarifficatedPayload = tarifficatePayload(report.getTariffProxy(), payload, totalTime);
+                Payload tarifficatedPayload = tarifficatePayload(report, payload, totalTime);
                 totalCost += tarifficatedPayload.getCost();
                 totalTime += getMinutesFromPayload(tarifficatedPayload.getDuration());
             }
@@ -50,6 +50,7 @@ public class HrsService {
             report.setTotalCost(totalCost);
             report.setMonetaryUnit("Rubles");
             reportRepository.insert(report);
+            log.info(String.valueOf(report));
         }
         return new PhoneBalanceDto(phoneBalances);
     }
@@ -68,35 +69,30 @@ public class HrsService {
     /* Происходит тарификация единственной записи внутри репорта
     (возвращает объект записи с установленным временем разговора, и рассчитанной ценой за звонок)
     */
-    private Payload tarifficatePayload(Tariff tariff, Payload payload, Integer totalTime) {
+    private Payload tarifficatePayload(Report report, Payload payload, Integer totalTime) {
         Date duration = getDurationFromPayload(payload);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT-0:00"));
         payload.setDuration(simpleDateFormat.format(duration));
         int minutes = getMinutesFromPayload(simpleDateFormat.format(duration));
 
-        if (tariff.getIsIncomingFree() || tariff.getMinutePrice() == 0)
-            payload.setCost(0F);
-
-        if (tariff.getOtherOperatorTariff() != null) {
-//            some logic for change balance of other operator abonent
-        }
-
-        if (tariff.getFixedMinutes() != null) {
-            int leftMinutes = fillFixedTime(payload, tariff, totalTime, minutes);
+        if (report.getTariffProxy().getFixedMinutes() != null && totalTime <= report.getTariffProxy().getFixedMinutes()) {
+            if (report.getTariffProxy().getIsIncomingFree() &&  payload.getCallType().equals("02")) {
+                payload.setCost(0F);
+                return payload;
+            }
+            int leftMinutes = fillFixedTime(payload, report.getTariffProxy(), totalTime, minutes);
             if (leftMinutes != 0) {
-                if (tariff.getNextTariffAfterFixedMinutes() != null) {
-                    payload.setCost(payload.getCost() + tariff.getNextTariffAfterFixedMinutes().getMinutePrice() * leftMinutes);
-                } else {
-                    payload.setCost(payload.getCost() + tariff.getMinutePrice() * leftMinutes);
+                if (report.getTariffProxy().getNextTariffAfterFixedMinutes() != null) {
+                    report.setTariffProxy(report.getTariffProxy().getNextTariffAfterFixedMinutes());
                 }
+                payload.setCost(payload.getCost() + report.getTariffProxy().getMinutePrice() * leftMinutes);
             }
         } else {
-            if (tariff.getNextTariffAfterFixedMinutes() != null) {
-                payload.setCost(tariff.getNextTariffAfterFixedMinutes().getMinutePrice() * minutes);
-            } else {
-                payload.setCost(tariff.getMinutePrice() * minutes);
+            if (report.getTariffProxy().getNextTariffAfterFixedMinutes() != null) {
+                report.setTariffProxy(report.getTariffProxy().getNextTariffAfterFixedMinutes());
             }
+            payload.setCost(report.getTariffProxy().getMinutePrice() * minutes);
         }
 
         return payload;
@@ -123,7 +119,6 @@ public class HrsService {
     @SneakyThrows
     private int getMinutesFromPayload(String time) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-//        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT-0:00"));
         Date duration = simpleDateFormat.parse(time);
         int minutes = duration.getHours() * 60 + duration.getMinutes() + (duration.getSeconds() > 0 ? 1 : 0);
         return minutes;

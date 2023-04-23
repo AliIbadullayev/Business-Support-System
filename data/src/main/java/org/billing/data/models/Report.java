@@ -1,6 +1,7 @@
 package org.billing.data.models;
 
 import lombok.Data;
+import lombok.ToString;
 import org.billing.data.pojo.Payload;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Document
 @Data
+@ToString
 public class Report {
     @MongoId
     private String id;

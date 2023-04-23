@@ -73,7 +73,8 @@ public class BillingService {
                     log.warn("Абонент с номером {} не принадлежит оператору Ромашка!", entry.getKey());
                     continue;
                 }
-                for (CdrPlusLine line: entry.getValue()){
+                List<CdrPlusLine> list = entry.getValue().stream().sorted(Comparator.comparing(CdrPlusLine::getStartDate)).toList();
+                for (CdrPlusLine line: list) {
                     line.setTariff(sub.getTariff().getId());
                     bw.write(line.toString());
                 }
