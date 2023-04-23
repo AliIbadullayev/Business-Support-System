@@ -2,9 +2,8 @@ package org.billing.data.models;
 
 import lombok.Data;
 import org.billing.data.pojo.Payload;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,7 +18,9 @@ public class Report {
     private String id;
     private List<Payload> payloads;
     private String number;
-    private Tariff tariff;
+    @Transient
+    private Tariff tariffProxy;
+    private String tariff;
     private Float totalCost;
     private String monetaryUnit;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

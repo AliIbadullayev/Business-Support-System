@@ -37,4 +37,9 @@ public class Tariff {
     /* Тариф для пользователей других операторов */
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Tariff otherOperatorTariff;
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

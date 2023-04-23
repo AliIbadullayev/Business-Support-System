@@ -1,11 +1,15 @@
 package org.billing.data.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import org.billing.data.pojo.PhoneBalance;
 
+import java.util.List;
+
+@Setter
+@Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class PhoneBalanceDto {
-    private String phoneNumber;
-    private Float balance;
+    private List<PhoneBalance> phoneBalances;
 }
