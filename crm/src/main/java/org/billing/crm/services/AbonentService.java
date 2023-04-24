@@ -83,7 +83,7 @@ public class AbonentService {
         subscriberInfo.setMoney(subscriberInfo.getMoney()+abonentPayDto.getMoney());
         updateSubscriberInfo(subscriberInfo);
 
-        jmsTemplate.convertAndSend("brt_sub_info_update", mapper.writeValueAsString(subscriberInfo));
+        jmsTemplate.convertAndSend("brt", mapper.writeValueAsString(subscriberInfo));
         return subscriberInfo;
     }
 
@@ -105,7 +105,7 @@ public class AbonentService {
         subscriberInfo.setNumber(abonentAddDto.getPhoneNumber());
         updateSubscriberInfo(subscriberInfo);
 
-        jmsTemplate.convertAndSend("brt_sub_info_update", mapper.writeValueAsString(subscriberInfo));
+        jmsTemplate.convertAndSend("brt", mapper.writeValueAsString(subscriberInfo));
         return subscriberInfo;
     }
 
@@ -123,7 +123,7 @@ public class AbonentService {
         subscriberInfo.setTariff(tariff.get());
         updateSubscriberInfo(subscriberInfo);
 
-        jmsTemplate.convertAndSend("brt_sub_info_update", mapper.writeValueAsString(subscriberInfo));
+        jmsTemplate.convertAndSend("brt", mapper.writeValueAsString(subscriberInfo));
         return subscriberInfo;
     }
 
@@ -134,7 +134,7 @@ public class AbonentService {
 
     @CachePut(value = "sub_info", key = "#subscriberInfo.number")
     public void updateSubscriberInfoFromBrt(SubscriberInfo subscriberInfo) {
-        log.info("Получены данные абонента {} с сервиса brt!", subscriberInfo.getNumber());
+        log.info("Данные абонента {} успешно сохранены в кэш!", subscriberInfo.getNumber());
     }
 
     @CachePut(value = "sub_info", key = "#subscriberInfo.number")

@@ -100,7 +100,7 @@ public class BillingService {
             SubscriberInfo sub = findAbonent(phoneBalance.getPhoneNumber());
             sub.setMoney(sub.getMoney() - phoneBalance.getBalance());
             updateSubscriberInfo(sub);
-            jmsTemplate.convertAndSend("crm_sub_info_update", mapper.writeValueAsString(sub));
+            jmsTemplate.convertAndSend("crm", mapper.writeValueAsString(sub));
             phoneBalance.setBalance(sub.getMoney());
         }
         log.info("Данные абонентов успешно обновлены!");
@@ -118,6 +118,6 @@ public class BillingService {
 
     @CachePut(value = "sub_info", key = "#subscriberInfo.number")
     public void updateSubscriberInfoFromCrm(SubscriberInfo subscriberInfo) {
-        log.info("Получены данные абонента {} с сервиса crm!", subscriberInfo.getNumber());
+        log.info("Данные абонента {} успешно сохранены в кэш!", subscriberInfo.getNumber());
     }
 }

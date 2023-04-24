@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.billing.crm.services.AbonentService;
 import org.billing.data.models.SubscriberInfo;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class SubInfoListener {
     private ObjectMapper mapper;
     private final AbonentService abonentService;
@@ -23,10 +25,10 @@ public class SubInfoListener {
     }
 
 
-    @JmsListener(destination = "${spring.artemis.embedded.queues}")
+    @JmsListener(destination = "crm")
     public void addPurchase(String msg) throws JsonProcessingException {
         SubscriberInfo subscriberInfo = mapper.readValue(msg, SubscriberInfo.class);
-        log.info("Получены данные абонента {} с сервиса crm!", subscriberInfo.getNumber());
+        log.info("Получены данные абонента {} с сервиса brt!", subscriberInfo.getNumber());
         abonentService.updateSubscriberInfoFromBrt(subscriberInfo);
     }
 }
