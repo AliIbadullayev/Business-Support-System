@@ -1,5 +1,6 @@
 package org.billing.crm.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.billing.crm.security.JwtTokenProvider;
@@ -29,11 +30,16 @@ public class AbonentRestController {
 
     @PatchMapping("pay")
     public ResponseEntity<?> payForNumber(@RequestBody AbonentPayDto abonentPayDto,
-                                         HttpServletRequest request) {
+                                         HttpServletRequest request) throws JsonProcessingException {
         String username = jwtTokenProvider.getUsernameFromToken(jwtTokenProvider.resolveToken(request));
         SubscriberInfo subscriberInfo = abonentService.replenishAbonentBalance(abonentPayDto);
 
         return new ResponseEntity<>(subscriberInfo, HttpStatus.OK);
+    }
+
+    @GetMapping("/report/{phoneNumber}")
+    public ResponseEntity<?> payForNumber(@PathVariable String phoneNumber){
+        return new ResponseEntity<>(abonentService.getLastReportByNumber(phoneNumber), HttpStatus.OK);
     }
 
 }

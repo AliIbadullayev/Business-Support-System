@@ -1,5 +1,6 @@
 package org.billing.data.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import org.billing.data.pojo.Payload;
@@ -21,6 +22,7 @@ public class Report {
     private List<Payload> payloads;
     private String number;
     @Transient
+    @JsonIgnore
     private Tariff tariffProxy;
     private String tariff;
     private Float totalCost;

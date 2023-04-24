@@ -1,5 +1,7 @@
 package org.billing.brt.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.billing.brt.exceptions.FurtherTarifficationException;
@@ -12,7 +14,10 @@ import org.billing.data.pojo.PhoneBalance;
 import org.billing.data.repositories.SubscriberInfoRepository;
 import org.billing.data.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,6 +35,8 @@ import java.util.*;
 public class BillingService {
 
     private final SubscriberInfoRepository subscriberInfoRepository;
+    private final JmsTemplate jmsTemplate;
+    private final ObjectMapper mapper;
     @Value("${hrs.server.host}")
     private String HRS_HOST;
     @Value("${hrs.server.port}")
@@ -37,8 +44,10 @@ public class BillingService {
 
     private RestTemplate restTemplate;
 
-    public BillingService(SubscriberInfoRepository subscriberInfoRepository) {
+    public BillingService(SubscriberInfoRepository subscriberInfoRepository, JmsTemplate jmsTemplate, ObjectMapper mapper) {
         this.subscriberInfoRepository = subscriberInfoRepository;
+        this.jmsTemplate = jmsTemplate;
+        this.mapper = mapper;
     }
 
     @PostConstruct
@@ -47,7 +56,7 @@ public class BillingService {
     }
 
     /* Передача следующему сервису BRT информацию про файл*/
-    public PhoneBalanceDto furtherTariffication(File file){
+    public PhoneBalanceDto furtherTariffication(File file) throws JsonProcessingException {
         String newUrl = CommonUtils.generateUrl(HRS_HOST, HRS_PORT, "api/hrs/tarifficate");
         HttpEntity<File> entity = new HttpEntity<>(file);
         PhoneBalanceDto phoneBalances = restTemplate.postForObject(newUrl, entity, PhoneBalanceDto.class);
@@ -70,7 +79,7 @@ public class BillingService {
             for (Map.Entry<String, List<CdrPlusLine>> entry: phonePayloads.entrySet()){
                 SubscriberInfo sub = subscriberInfoRepository.findByNumber(entry.getKey());
                 if (sub == null || sub.getMoney() <= 0) {
-                    log.warn("Абонент с номером {} не принадлежит оператору Ромашка!", entry.getKey());
+                    log.warn("Абонент с номером {} не прошел валидацию!", entry.getKey());
                     continue;
                 }
                 List<CdrPlusLine> list = entry.getValue().stream().sorted(Comparator.comparing(CdrPlusLine::getStartDate)).toList();
@@ -86,14 +95,29 @@ public class BillingService {
         }
     }
 
-    public void updateSubscriberInfo(PhoneBalanceDto phoneBalances){
+    public void updateSubscriberInfo(PhoneBalanceDto phoneBalances) throws JsonProcessingException {
         for (PhoneBalance phoneBalance: phoneBalances.getPhoneBalances()){
-            SubscriberInfo sub = subscriberInfoRepository.findByNumber(phoneBalance.getPhoneNumber());
+            SubscriberInfo sub = findAbonent(phoneBalance.getPhoneNumber());
             sub.setMoney(sub.getMoney() - phoneBalance.getBalance());
-            subscriberInfoRepository.save(sub);
+            updateSubscriberInfo(sub);
+            jmsTemplate.convertAndSend("crm_sub_info_update", mapper.writeValueAsString(sub));
             phoneBalance.setBalance(sub.getMoney());
         }
         log.info("Данные абонентов успешно обновлены!");
     }
 
+    @CachePut(value = "sub_info", key = "#subscriberInfo.number")
+    public void updateSubscriberInfo(SubscriberInfo subscriberInfo) {
+        subscriberInfoRepository.save(subscriberInfo);
+    }
+
+    @Cacheable(value = "sub_info", key = "#phoneNumber")
+    public SubscriberInfo findAbonent(String phoneNumber){
+        return subscriberInfoRepository.findByNumber(phoneNumber);
+    }
+
+    @CachePut(value = "sub_info", key = "#subscriberInfo.number")
+    public void updateSubscriberInfoFromCrm(SubscriberInfo subscriberInfo) {
+        log.info("Получены данные абонента {} с сервиса crm!", subscriberInfo.getNumber());
+    }
 }

@@ -17,7 +17,7 @@ public class CdrApplication {
     GeneratorService generatorService;
 
     public static void main(String[] args) {
-        SpringApplication.run(CdrApplication.class, args).close();
+        SpringApplication.run(CdrApplication.class, args);
 
     }
 
@@ -25,9 +25,7 @@ public class CdrApplication {
     public CommandLineRunner runner(){
         return runner -> {
             File cdr = generatorService.generateCDRFile();
-            System.out.println(cdr.getPath());
             PhoneBalanceDto phoneBalanceDto = generatorService.furtherTariffication(cdr);
-            System.out.println(phoneBalanceDto.getPhoneBalances().get(0));
         };
     }
 }
