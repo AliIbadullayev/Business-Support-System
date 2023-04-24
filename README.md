@@ -47,4 +47,4 @@ Spring boot, swagger UI
 
 [`Модуль crm`](https://github.com/AliIbadullayev/Business-Support-System/tree/main/crm/src/main) - сервис на котором проиходит авторизация и который выступает в роли `API gateway`
 
-[`Модуль cdr`]() - сервис на котором генерируется `cdr` файл
+[`Модуль cdr`](https://github.com/AliIbadullayev/Business-Support-System/tree/main/cdr/src/main) - сервис на котором генерируется `cdr` файл
