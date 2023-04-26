@@ -65,7 +65,7 @@ public class HrsService {
     /* Происходит тарификация единственной записи внутри репорта
     (возвращает объект записи с установленным временем разговора, и рассчитанной ценой за звонок)
     */
-    private Payload tarifficatePayload(Report report, Payload payload, Integer totalTime) {
+    public Payload tarifficatePayload(Report report, Payload payload, Integer totalTime) {
         Date duration = getDurationFromPayload(payload);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT-0:00"));

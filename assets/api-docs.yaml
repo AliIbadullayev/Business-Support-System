@@ -1,0 +1,289 @@
+openapi: 3.0.1
+info:
+  title: Billing-Support-System
+  version: 3.0.0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+security:
+- Authorization: []
+paths:
+  /api/manager/abonent:
+    post:
+      tags:
+      - manager-rest-controller
+      operationId: addAbonent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbonentAddDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/auth/refresh:
+    post:
+      tags:
+      - authentication-rest-controller
+      operationId: refresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequestDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/auth/logout:
+    post:
+      tags:
+      - authentication-rest-controller
+      operationId: authenticate
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+  /api/auth/login:
+    post:
+      tags:
+      - authentication-rest-controller
+      operationId: authenticate_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequestDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/manager/tariff:
+    patch:
+      tags:
+      - manager-rest-controller
+      operationId: changeTariff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeTariffDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/manager/billing:
+    patch:
+      tags:
+      - manager-rest-controller
+      operationId: billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/abonent/pay:
+    patch:
+      tags:
+      - abonent-rest-controller
+      operationId: payForNumber
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbonentPayDto'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/abonent/report/{phoneNumber}:
+    get:
+      tags:
+      - abonent-rest-controller
+      operationId: payForNumber_1
+      parameters:
+      - name: phoneNumber
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+components:
+  schemas:
+    AbonentAddDto:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        tariffId:
+          type: string
+        balance:
+          type: number
+          format: float
+    RefreshTokenRequestDto:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+    AuthenticationRequestDto:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ChangeTariffDto:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        tariffId:
+          type: string
+    BillingDto:
+      type: object
+      properties:
+        action:
+          type: string
+    AbonentPayDto:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        money:
+          type: number
+          format: float
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header

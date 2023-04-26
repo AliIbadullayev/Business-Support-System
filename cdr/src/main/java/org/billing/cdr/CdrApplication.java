@@ -18,7 +18,6 @@ public class CdrApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CdrApplication.class, args);
-
     }
 
     @Bean
