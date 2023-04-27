@@ -20,27 +20,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build common data module
-      run: |
-        cd ./data
-        mvn clean install
-        cd ..
+      run: mvn -B clean install --file ./data/pom.xml
     - name: Build hrs module
-      run: |
-        cd ./hrs
-        mvn clean package
-        cd ..
+      run: mvn -B clean package --file ./hrs/pom.xml
     - name: Build brt module
-      run: |
-        cd ./brt
-        mvn clean package
-        cd ..
+      run: mvn -B clean package --file ./brt/pom.xml
     - name: Build cdr module
-      run: |
-        cd ./cdr
-        mvn clean package
-        cd ..
+      run: mvn -B clean package --file ./cdr/pom.xml
     - name: Build crm module
-      run: |
-        cd ./crm
-        mvn clean package
-        cd ..
+      run: mvn -B clean package --file ./crm/pom.xml
