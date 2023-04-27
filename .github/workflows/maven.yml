@@ -44,6 +44,15 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build & push Docker HRS
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: ibadullayevali/hrs
+        tags: latest
+        registry: docker.io
+        dockerfile: ./hrs/Dockerfile
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build and push hrs
       uses: docker/build-push-action@v2
       with:
