@@ -1,0 +1,146 @@
+services:
+  crm:
+    image: crm-image
+    build: ./crm/
+    container_name: crm
+    depends_on:
+      - postgres
+      - artemis
+      - mongo
+    ports:
+      - 8080:8080
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_ARTEMIS_USER=artemis
+      - SPRING_ARTEMIS_PASSWORD=artemis
+      - SPRING_ARTEMIS_BROKERURL=tcp://artemis:61616
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_USERNAME=alibaba
+      - SPRING_DATA_MONGODB_PASSWORD=alibaba
+      - CDR_SERVER_HOST=cdr
+      - CDR_SERVER_PORT=8081
+    volumes:
+      - generated-files:/generated-files
+
+  brt:
+    image: brt-image
+    build: ./brt/
+    container_name: brt
+    depends_on:
+      - postgres
+      - artemis
+      - mongo
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_ARTEMIS_USER=artemis
+      - SPRING_ARTEMIS_PASSWORD=artemis
+      - SPRING_ARTEMIS_BROKERURL=tcp://artemis:61616
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_USERNAME=alibaba
+      - SPRING_DATA_MONGODB_PASSWORD=alibaba
+      - HRS_SERVER_HOST=hrs
+      - HRS_SERVER_PORT=8083
+    volumes:
+      - generated-files:/generated-files
+
+  hrs:
+    image: hrs-image
+    build: ./hrs/
+    container_name: hrs
+    depends_on:
+      - postgres
+      - artemis
+      - mongo
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_ARTEMIS_USER=artemis
+      - SPRING_ARTEMIS_PASSWORD=artemis
+      - SPRING_ARTEMIS_BROKERURL=tcp://artemis:61616
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_USERNAME=alibaba
+      - SPRING_DATA_MONGODB_PASSWORD=alibaba
+    volumes:
+      - generated-files:/generated-files
+
+  cdr:
+    image: cdr-image
+    build: ./cdr/
+    container_name: cdr
+    depends_on:
+      - postgres
+      - artemis
+      - mongo
+      - hrs
+      - brt
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_ARTEMIS_USER=artemis
+      - SPRING_ARTEMIS_PASSWORD=artemis
+      - SPRING_ARTEMIS_BROKERURL=tcp://artemis:61616
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_USERNAME=alibaba
+      - SPRING_DATA_MONGODB_PASSWORD=alibaba
+      - BRT_SERVER_HOST=brt
+      - BRT_SERVER_PORT=8082
+    volumes:
+      - generated-files:/generated-files
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./assets/script.sql:/docker-entrypoint-initdb.d/init.sql
+
+  artemis:
+    image: vromero/activemq-artemis
+    container_name: artemis
+    ports:
+      - 8161:8161
+      - 61616:61616
+      - 5762:5762
+    environment:
+      - ARTEMIS_USERNAME=artemis
+      - ARTEMIS_PASSWORD=artemis
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=alibaba
+      - MONGO_INITDB_ROOT_PASSWORD=alibaba
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+    command: mongod
+
+
+volumes:
+  postgres-data:
+  generated-files:
+  mongodb:
+  mongodb_config:
