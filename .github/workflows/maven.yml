@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -21,8 +19,15 @@ jobs:
         cache: maven
     - name: Build common data module
       run: mvn -B clean install --file ./data/pom.xml
-    - name: Build hrs module
+    - name: Build HRS module
       run: mvn -B clean package --file ./hrs/pom.xml
+    - name: Build BRT module
+      run: mvn -B clean package --file ./brt/pom.xml
+    - name: Build CDR module
+      run: mvn -B clean package --file ./cdr/pom.xml
+    - name: Build CRM module
+      run: mvn -B clean package --file ./crm/pom.xml
+   
    
     - name: Login to Docker Hub
       uses: docker/login-action@v2
@@ -33,9 +38,30 @@ jobs:
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
     -
-      name: Build and push
+      name: Build and push HRS module
       uses: docker/build-push-action@v4
       with:
         context: ./hrs
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/hrs:latest
+    -
+      name: Build and push BRT module
+      uses: docker/build-push-action@v4
+      with:
+        context: ./brt
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/brt:latest
+    -
+      name: Build and push CDR module
+      uses: docker/build-push-action@v4
+      with:
+        context: ./cdr
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/cdr:latest
+    -
+      name: Build and push CRM module
+      uses: docker/build-push-action@v4
+      with:
+        context: ./crm
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/crm:latest
