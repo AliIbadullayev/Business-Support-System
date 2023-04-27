@@ -1,7 +1,6 @@
 services:
   crm:
-    image: crm-image
-    build: ./crm/
+    image: ibadullayevali/crm
     container_name: crm
     depends_on:
       - postgres
@@ -27,8 +26,7 @@ services:
       - generated-files:/generated-files
 
   brt:
-    image: brt-image
-    build: ./brt/
+    image: ibadullayevali/brt
     container_name: brt
     depends_on:
       - postgres
@@ -52,8 +50,7 @@ services:
       - generated-files:/generated-files
 
   hrs:
-    image: hrs-image
-    build: ./hrs/
+    image: ibadullayevali/hrs
     container_name: hrs
     depends_on:
       - postgres
@@ -75,8 +72,7 @@ services:
       - generated-files:/generated-files
 
   cdr:
-    image: cdr-image
-    build: ./cdr/
+    image: ibadullayevali/cdr
     container_name: cdr
     depends_on:
       - postgres
