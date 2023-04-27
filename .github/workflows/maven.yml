@@ -29,3 +29,38 @@ jobs:
       run: mvn -B clean package --file ./cdr/pom.xml
     - name: Build crm module
       run: mvn -B clean package --file ./crm/pom.xml
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push hrs
+      uses: docker/build-push-action@v4
+      with:
+        context: ./hrs
+        push: true
+        tags: ibadullayevali/hrs
+    - name: Build and push brt
+      uses: docker/build-push-action@v4
+      with:
+        context: ./brt
+        push: true
+        tags: ibadullayevali/brt
+    - name: Build and push cdr
+      uses: docker/build-push-action@v4
+      with:
+        context: ./cdr
+        push: true
+        tags: ibadullayevali/cdr
+    - name: Build and push crm
+      uses: docker/build-push-action@v4
+      with:
+        context: ./crm
+        push: true
+        tags: ibadullayevali/crm
