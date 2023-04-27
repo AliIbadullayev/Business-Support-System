@@ -1,0 +1,31 @@
+name: Business-Support-System CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build common data module
+      run: mvn clean install ./data/pom.xml
+    - name: Build hrs module
+      run: mvn clean package ./hrs/pom.xml
+    - name: Build brt module
+      run: mvn clean package ./brt/pom.xml
+    - name: Build cdr module
+      run: mvn clean package ./cdr/pom.xml
+    - name: Build crm module
+      run: mvn clean package ./crm/pom.xml
