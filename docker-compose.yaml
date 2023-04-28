@@ -23,7 +23,7 @@ services:
       - CDR_SERVER_HOST=cdr
       - CDR_SERVER_PORT=8081
     volumes:
-      - generated-files:/generated-files
+      - ./generated-files:/generated-files
 
   brt:
     image: ibadullayevali/brt
@@ -47,7 +47,7 @@ services:
       - HRS_SERVER_HOST=hrs
       - HRS_SERVER_PORT=8083
     volumes:
-      - generated-files:/generated-files
+      - ./generated-files:/generated-files
 
   hrs:
     image: ibadullayevali/hrs
@@ -69,7 +69,7 @@ services:
       - SPRING_DATA_MONGODB_USERNAME=alibaba
       - SPRING_DATA_MONGODB_PASSWORD=alibaba
     volumes:
-      - generated-files:/generated-files
+      - ./generated-files:/generated-files
 
   cdr:
     image: ibadullayevali/cdr
@@ -95,7 +95,7 @@ services:
       - BRT_SERVER_HOST=brt
       - BRT_SERVER_PORT=8082
     volumes:
-      - generated-files:/generated-files
+      - ./generated-files:/generated-files
 
   postgres:
     image: postgres:latest
@@ -137,6 +137,5 @@ services:
 
 volumes:
   postgres-data:
-  generated-files:
   mongodb:
   mongodb_config:
